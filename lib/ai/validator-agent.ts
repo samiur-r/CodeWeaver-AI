@@ -20,7 +20,7 @@ export async function validateCodeWithAI(
     const prompt = `Analyze the following ${language} code:\n\n\`\`\`${language}\n${code}\n\`\`\``;
 
     const { object } = await generateObject({
-      model: openai('gpt-4-turbo'),
+      model: openai('gpt-4.1-nano'),
       schema: ValidationSchema,
       system: VALIDATION_SYSTEM_PROMPT,
       prompt: prompt,

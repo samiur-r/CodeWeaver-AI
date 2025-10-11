@@ -1,7 +1,8 @@
 'use client';
 
-import { useState } from 'react';
-import { useChat, type Message } from 'ai/react';
+import { useState, useMemo } from 'react';
+import { useChat } from '@ai-sdk/react';
+import { DefaultChatTransport } from 'ai';
 import { LanguageSelector } from '@/components/LanguageSelector';
 import { PromptInput } from '@/components/PromptInput';
 import { ScriptDisplay } from '@/components/ScriptDisplay';
@@ -14,29 +15,47 @@ import { ReloadIcon } from '@radix-ui/react-icons';
 export default function Home() {
   const [language, setLanguage] = useState<SupportedLanguage>('python');
   const [prompt, setPrompt] = useState('');
-  const [generatedCode, setGeneratedCode] = useState('');
   const [validation, setValidation] = useState<ValidationResponse | null>(null);
   const [isValidating, setIsValidating] = useState(false);
 
-  const { append, isLoading } = useChat({
-    api: '/api/generate',
-    body: {
-      language,
-    },
-    onFinish: (message) => {
-      setGeneratedCode(message.content);
-    },
+  const { messages, sendMessage, status } = useChat({
+    transport: new DefaultChatTransport({
+      api: '/api/chat',
+      fetch: async (url, options) => {
+        // Add language to the request body
+        const body = options?.body ? JSON.parse(options.body as string) : {};
+        body.language = language;
+
+        return fetch(url, {
+          ...options,
+          body: JSON.stringify(body),
+        });
+      },
+    }),
   });
+
+  const isLoading = status === 'submitted' || status === 'streaming';
+
+  // Extract the generated code from the last assistant message
+  const generatedCode = useMemo(() => {
+    const lastMessage = [...messages].reverse().find(m => m.role === 'assistant');
+    if (!lastMessage) return '';
+
+    const textContent = lastMessage.parts
+      .filter(part => part.type === 'text')
+      .map(part => part.text)
+      .join('');
+
+    return textContent;
+  }, [messages]);
 
   const handleGenerate = async () => {
     if (!prompt.trim()) return;
 
-    setGeneratedCode('');
     setValidation(null);
 
-    await append({
-      role: 'user',
-      content: prompt,
+    sendMessage({
+      text: prompt,
     });
   };
 
@@ -160,13 +179,6 @@ export default function Home() {
               <ValidationPanel validation={validation} isLoading={isValidating} />
             )}
           </div>
-        </div>
-
-        {/* Footer */}
-        <div className="mt-12 text-center text-sm text-muted-foreground">
-          <p>
-            Powered by GPT-4 and Vercel AI SDK
-          </p>
         </div>
       </div>
     </div>
