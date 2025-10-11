@@ -45,7 +45,7 @@ Open http://localhost:3000
 
 ## Tech Stack
 
-Next.js 16 • TypeScript • Tailwind CSS • Vercel AI SDK • OpenAI GPT-4.1
+Next.js 15 • TypeScript • Tailwind CSS • Vercel AI SDK • OpenAI GPT-4.1
 
 ## License
 
