@@ -28,15 +28,6 @@ export const LANGUAGE_CONTEXTS: Record<SupportedLanguage, string> = {
 - Add XML documentation comments
 - Follow SOLID principles`,
 
-  java: `You are an expert Java developer. Generate clean, modern Java code following these best practices:
-- Use Java 17+ features
-- Follow Java naming conventions (camelCase for methods, PascalCase for classes)
-- Use streams and lambdas where appropriate
-- Include proper exception handling
-- Use modern collection APIs
-- Add Javadoc comments
-- Follow SOLID principles`,
-
   go: `You are an expert Go developer. Generate clean, idiomatic Go code following these best practices:
 - Follow Go conventions and style guidelines
 - Use meaningful variable names (short names for short scopes)
@@ -45,25 +36,6 @@ export const LANGUAGE_CONTEXTS: Record<SupportedLanguage, string> = {
 - Keep functions small and focused
 - Use interfaces where appropriate
 - Add package-level comments`,
-
-  rust: `You are an expert Rust developer. Generate clean, idiomatic Rust code following these best practices:
-- Leverage Rust's ownership and borrowing system
-- Use Result and Option types for error handling
-- Follow Rust naming conventions (snake_case)
-- Use iterators and functional patterns
-- Avoid unsafe code unless necessary
-- Add documentation comments with ///
-- Use meaningful variable names`,
-
-  php: `You are an expert PHP developer. Generate clean, modern PHP code following these best practices:
-- Use PHP 8.2+ features
-- Follow PSR standards (PSR-1, PSR-12)
-- Use type declarations (strict_types)
-- Include proper error handling
-- Use meaningful variable and function names
-- Follow SOLID principles
-- Add PHPDoc comments for functions and classes
-- Use composer-compatible namespaces`,
 };
 
 export function getSystemPrompt(language: SupportedLanguage, userPrompt: string): string {
