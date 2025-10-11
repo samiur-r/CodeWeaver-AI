@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useMemo } from 'react';
+import { useState, useMemo, useRef } from 'react';
 import { useChat } from '@ai-sdk/react';
 import { DefaultChatTransport } from 'ai';
 import { LanguageSelector } from '@/components/LanguageSelector';
@@ -18,13 +18,17 @@ export default function Home() {
   const [validation, setValidation] = useState<ValidationResponse | null>(null);
   const [isValidating, setIsValidating] = useState(false);
 
+  // Use ref to access current language value in the fetch closure
+  const languageRef = useRef<SupportedLanguage>(language);
+  languageRef.current = language;
+
   const { messages, sendMessage, status } = useChat({
     transport: new DefaultChatTransport({
       api: '/api/chat',
       fetch: async (url, options) => {
         // Add language to the request body
         const body = options?.body ? JSON.parse(options.body as string) : {};
-        body.language = language;
+        body.language = languageRef.current;
 
         return fetch(url, {
           ...options,
