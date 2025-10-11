@@ -120,6 +120,28 @@ export default function Home() {
 
                 <PromptInput value={prompt} onChange={setPrompt} />
 
+                <div className="space-y-2">
+                  <label className="text-xs text-muted-foreground">Quick Examples:</label>
+                  <div className="flex gap-2 flex-wrap">
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      onClick={() => setPrompt("Create a function to calculate fibonacci numbers up to n with memoization")}
+                      disabled={isLoading}
+                    >
+                      Fibonacci Calculator
+                    </Button>
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      onClick={() => setPrompt("Create a REST API endpoint that fetches user data and handles errors gracefully")}
+                      disabled={isLoading}
+                    >
+                      REST API Endpoint
+                    </Button>
+                  </div>
+                </div>
+
                 <Button
                   onClick={handleGenerate}
                   disabled={!prompt.trim() || isLoading}
