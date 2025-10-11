@@ -2,10 +2,7 @@ export type SupportedLanguage =
   | 'python'
   | 'typescript'
   | 'csharp'
-  | 'java'
-  | 'go'
-  | 'rust'
-  | 'php';
+  | 'go';
 
 export interface GenerateRequest {
   language: SupportedLanguage;
