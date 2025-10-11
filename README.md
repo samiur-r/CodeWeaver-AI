@@ -37,6 +37,12 @@ Open http://localhost:3000
 3. Click "Generate Script" → watch AI write code
 4. Click "Validate & Execute" → see syntax check, execution results, and AI feedback
 
+## How It Works
+
+**Generate Script:** User prompt → GPT-4.1 with language-specific context → Streams code in real-time
+
+**Validate & Execute:** Syntax check (compile) → Run code in temp file (10s timeout) → AI analysis (quality/security)
+
 ## Tech Stack
 
 Next.js 16 • TypeScript • Tailwind CSS • Vercel AI SDK • OpenAI GPT-4.1
