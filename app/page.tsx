@@ -1,65 +1,174 @@
-import Image from "next/image";
+'use client';
+
+import { useState } from 'react';
+import { useChat, type Message } from 'ai/react';
+import { LanguageSelector } from '@/components/LanguageSelector';
+import { PromptInput } from '@/components/PromptInput';
+import { ScriptDisplay } from '@/components/ScriptDisplay';
+import { ValidationPanel } from '@/components/ValidationPanel';
+import { Button } from '@/components/ui/button';
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+import { SupportedLanguage, ValidationResponse } from '@/types';
+import { ReloadIcon } from '@radix-ui/react-icons';
 
 export default function Home() {
+  const [language, setLanguage] = useState<SupportedLanguage>('python');
+  const [prompt, setPrompt] = useState('');
+  const [generatedCode, setGeneratedCode] = useState('');
+  const [validation, setValidation] = useState<ValidationResponse | null>(null);
+  const [isValidating, setIsValidating] = useState(false);
+
+  const { append, isLoading } = useChat({
+    api: '/api/generate',
+    body: {
+      language,
+    },
+    onFinish: (message) => {
+      setGeneratedCode(message.content);
+    },
+  });
+
+  const handleGenerate = async () => {
+    if (!prompt.trim()) return;
+
+    setGeneratedCode('');
+    setValidation(null);
+
+    await append({
+      role: 'user',
+      content: prompt,
+    });
+  };
+
+  const handleValidate = async () => {
+    if (!generatedCode) return;
+
+    setIsValidating(true);
+    try {
+      const response = await fetch('/api/validate', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          language,
+          code: generatedCode,
+        }),
+      });
+
+      if (!response.ok) {
+        throw new Error('Validation failed');
+      }
+
+      const data: ValidationResponse = await response.json();
+      setValidation(data);
+    } catch (error) {
+      console.error('Validation error:', error);
+    } finally {
+      setIsValidating(false);
+    }
+  };
+
   return (
-    <div className="flex min-h-screen items-center justify-center bg-zinc-50 font-sans dark:bg-black">
-      <main className="flex min-h-screen w-full max-w-3xl flex-col items-center justify-between py-32 px-16 bg-white dark:bg-black sm:items-start">
-        <Image
-          className="dark:invert"
-          src="/next.svg"
-          alt="Next.js logo"
-          width={100}
-          height={20}
-          priority
-        />
-        <div className="flex flex-col items-center gap-6 text-center sm:items-start sm:text-left">
-          <h1 className="max-w-xs text-3xl font-semibold leading-10 tracking-tight text-black dark:text-zinc-50">
-            To get started, edit the page.tsx file.
+    <div className="min-h-screen bg-gradient-to-b from-gray-50 to-gray-100 dark:from-gray-900 dark:to-gray-950">
+      <div className="container mx-auto py-8 px-4">
+        {/* Header */}
+        <div className="mb-8 text-center">
+          <h1 className="text-4xl font-bold mb-2 bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">
+            CodeWeaver AI
           </h1>
-          <p className="max-w-md text-lg leading-8 text-zinc-600 dark:text-zinc-400">
-            Looking for a starting point or more instructions? Head over to{" "}
-            <a
-              href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-              className="font-medium text-zinc-950 dark:text-zinc-50"
-            >
-              Templates
-            </a>{" "}
-            or the{" "}
-            <a
-              href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-              className="font-medium text-zinc-950 dark:text-zinc-50"
-            >
-              Learning
-            </a>{" "}
-            center.
+          <p className="text-muted-foreground">
+            Generate, validate, and execute code in multiple programming languages
           </p>
         </div>
-        <div className="flex flex-col gap-4 text-base font-medium sm:flex-row">
-          <a
-            className="flex h-12 w-full items-center justify-center gap-2 rounded-full bg-foreground px-5 text-background transition-colors hover:bg-[#383838] dark:hover:bg-[#ccc] md:w-[158px]"
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <Image
-              className="dark:invert"
-              src="/vercel.svg"
-              alt="Vercel logomark"
-              width={16}
-              height={16}
-            />
-            Deploy Now
-          </a>
-          <a
-            className="flex h-12 w-full items-center justify-center rounded-full border border-solid border-black/[.08] px-5 transition-colors hover:border-transparent hover:bg-black/[.04] dark:border-white/[.145] dark:hover:bg-[#1a1a1a] md:w-[158px]"
-            href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Documentation
-          </a>
+
+        {/* Main Content */}
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+          {/* Left Column: Input Section */}
+          <div className="space-y-6">
+            <Card>
+              <CardHeader>
+                <CardTitle>Generate Script</CardTitle>
+                <CardDescription>
+                  Select a programming language and describe what you want to create
+                </CardDescription>
+              </CardHeader>
+              <CardContent className="space-y-4">
+                <div className="space-y-2">
+                  <label className="text-sm font-medium">Programming Language</label>
+                  <LanguageSelector value={language} onChange={setLanguage} />
+                </div>
+
+                <PromptInput value={prompt} onChange={setPrompt} />
+
+                <Button
+                  onClick={handleGenerate}
+                  disabled={!prompt.trim() || isLoading}
+                  className="w-full"
+                  size="lg"
+                >
+                  {isLoading ? (
+                    <>
+                      <ReloadIcon className="mr-2 h-4 w-4 animate-spin" />
+                      Generating...
+                    </>
+                  ) : (
+                    'Generate Script'
+                  )}
+                </Button>
+              </CardContent>
+            </Card>
+
+            {/* Validation Section */}
+            {generatedCode && (
+              <Card>
+                <CardHeader>
+                  <CardTitle>Validate & Execute</CardTitle>
+                  <CardDescription>
+                    Check syntax, run the code, and get AI-powered analysis
+                  </CardDescription>
+                </CardHeader>
+                <CardContent>
+                  <Button
+                    onClick={handleValidate}
+                    disabled={!generatedCode || isValidating}
+                    className="w-full"
+                    variant="secondary"
+                    size="lg"
+                  >
+                    {isValidating ? (
+                      <>
+                        <ReloadIcon className="mr-2 h-4 w-4 animate-spin" />
+                        Validating...
+                      </>
+                    ) : (
+                      'Validate & Execute Code'
+                    )}
+                  </Button>
+                </CardContent>
+              </Card>
+            )}
+          </div>
+
+          {/* Right Column: Output Section */}
+          <div className="space-y-6">
+            {/* Generated Code Display */}
+            <ScriptDisplay code={generatedCode} language={language} />
+
+            {/* Validation Results */}
+            {(validation || isValidating) && (
+              <ValidationPanel validation={validation} isLoading={isValidating} />
+            )}
+          </div>
         </div>
-      </main>
+
+        {/* Footer */}
+        <div className="mt-12 text-center text-sm text-muted-foreground">
+          <p>
+            Powered by GPT-4 and Vercel AI SDK
+          </p>
+        </div>
+      </div>
     </div>
   );
 }

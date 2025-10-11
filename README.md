@@ -1,36 +1,85 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# CodeWeaver AI
+
+A powerful Next.js application that generates scripts in multiple programming languages using GPT-4, with AI-powered validation, syntax checking, and runtime error detection.
+
+## Features
+
+- **Multi-Language Support**: Generate scripts in Python, TypeScript, C#, and Go
+- **AI-Powered Generation**: Uses GPT-4 via Vercel AI SDK for intelligent code generation
+- **Three-Layer Validation**:
+  - Syntax validation using language-specific compilers
+  - Runtime execution in sandboxed environment
+  - AI-powered code analysis for bugs, security, and best practices
+- **Real-time Streaming**: See code generation happen in real-time
+- **Modern UI**: Built with Next.js 14, Tailwind CSS, and shadcn/ui
+- **Code Actions**: Copy and download generated scripts
+
+## Tech Stack
+
+- **Framework**: Next.js 14+ with App Router
+- **Language**: TypeScript
+- **Styling**: Tailwind CSS 4
+- **UI Components**: shadcn/ui + Radix UI
+- **AI**: Vercel AI SDK + OpenAI GPT-4
+- **Code Highlighting**: React Syntax Highlighter with Prism
+- **Validation**: Language-specific executors
+
+## Prerequisites
+
+Before running this project, ensure you have the following installed:
+
+- Node.js 18+ (required for Next.js 14)
+- pnpm (package manager)
+- Python 3 (for Python script execution)
+- Go (optional, for Go script execution)
+- .NET SDK (optional, for C# script execution)
 
 ## Getting Started
 
-First, run the development server:
+### 1. Install Dependencies
 
 ```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
+pnpm install
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+### 2. Set Up Environment Variables
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+Edit the `.env.local` file and add your OpenAI API key:
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+```env
+OPENAI_API_KEY=your_actual_openai_api_key_here
+```
 
-## Learn More
+Get your API key from: https://platform.openai.com/api-keys
 
-To learn more about Next.js, take a look at the following resources:
+### 3. Run Development Server
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+```bash
+pnpm dev
+```
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+Open [http://localhost:3000](http://localhost:3000) in your browser.
 
-## Deploy on Vercel
+### 4. TypeScript IDE Support
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+If you see TypeScript errors like "Cannot find module 'ai/react'":
+- Restart your IDE or TypeScript server  
+- In VSCode: Cmd+Shift+P → "TypeScript: Restart TS Server"
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+## Usage
+
+1. **Select a Language**: Choose from Python, TypeScript, C#, or Go
+2. **Describe Your Script**: Enter what you want to create
+3. **Generate**: Click "Generate Script"
+4. **Validate**: Click "Validate & Execute Code" to check syntax, run code, and get AI analysis
+
+## Deploy to Vercel
+
+1. Push to GitHub
+2. Import to Vercel
+3. Add `OPENAI_API_KEY` environment variable
+4. Deploy!
+
+## License
+
+MIT
